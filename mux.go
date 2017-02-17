@@ -95,8 +95,8 @@ func (mx *Mux) Use(middlewares ...func(http.Handler) http.Handler) {
 
 // Handle adds the route `pattern` that matches any http method to
 // execute the `handler` http.Handler.
-func (mx *Mux) Handle(pattern string, handler http.Handler) {
-	mx.handle(mALL, pattern, handler)
+func (mx *Mux) Handle(method string, pattern string, handler http.Handler) {
+	mx.handle(Methods.lookup(method), pattern, handler)
 }
 
 // HandleFunc adds the route `pattern` that matches any http method to
@@ -405,4 +405,37 @@ func (mx *Mux) updateSubRoutes(fn func(subMux *Mux)) {
 func methodNotAllowedHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(405)
 	w.Write(nil)
+}
+
+var Methods = newMethods()
+
+type methods struct {
+	ms map[string]methodTyp
+}
+
+func newMethods() *methods {
+	return &methods{
+		ms: methodsMap,
+	}
+}
+
+// lookup check if method exists when return Method else return MethodNotFound
+func (m *methods) lookup(method string) methodTyp {
+
+	if value, found := m.ms[method]; found {
+		return value
+	}
+
+	return mALL
+}
+
+// Methods a map of all standard methods
+var methodsMap = map[string]methodTyp{
+	http.MethodGet:     mGET,
+	http.MethodPost:    mPOST,
+	http.MethodPut:     mPUT,
+	http.MethodDelete:  mDELETE,
+	http.MethodPatch:   mPATCH,
+	http.MethodOptions: mOPTIONS,
+	http.MethodHead:    mHEAD,
 }

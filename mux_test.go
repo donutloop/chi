@@ -241,7 +241,7 @@ func TestMuxEmptyRoutes(t *testing.T) {
 	apiRouter := NewRouter()
 	// oops, we forgot to declare any route handlers
 
-	mux.Handle("/api*", apiRouter)
+	mux.Handle(http.MethodGet, "/api*", apiRouter)
 
 	if _, body := testHandler(t, mux, "GET", "/", nil); body != "404 page not found\n" {
 		t.Fatalf(body)
