@@ -384,6 +384,7 @@ func (mx *Mux) routeHTTP(w http.ResponseWriter, r *http.Request) {
 		mx.MethodNotAllowedHandler().ServeHTTP(w, r)
 		return
 	}
+	AddQueries(r)
 
 	// Serve it up
 	h.ServeHTTP(w, r)
